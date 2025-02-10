@@ -1,6 +1,16 @@
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
-WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
+import sys
+from tkinter.filedialog import askopenfilename
+
+def get_value(name, default):
+    try:
+        index = sys.argv.index(f"--{name}")
+        return sys.argv[index+1]
+    except ValueError:
+        return default
+
+WINDOW_SIZE = [int(i) for i in get_value("size", "800x600").split("x")]
+WINDOW_WIDTH = WINDOW_SIZE[0]
+WINDOW_HEIGHT = WINDOW_SIZE[1]
 
 RED: str = "\033[91m"
 GREEN: str = "\033[92m"
@@ -43,3 +53,7 @@ KEYMAPS = {
 
 GET_RESOURCE_DEFAULT_TIP = "在压缩包中找到了多个谱面，请选择一个："
 GET_RESOURCE_TIP = "在压缩包中找到了多个%s，请选择一个作为%s："
+
+config = {
+    "chart": get_value("chart", askopenfilename(title="选择谱面", filetypes=[("谱面文件", ["*.pez", "*.zip"]), ("所有文件", "*.*")]))
+}

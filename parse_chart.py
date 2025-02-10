@@ -1,6 +1,7 @@
-import json, zipfile, yaml, typing
+import json, zipfile, yaml, typing, io
 
 from const import *
+from PIL import Image
 
 def parse_info_csv(s:str) -> dict:
     result_list = [item.split(",") for item in s.replace("\r", "").split("\n")]
@@ -60,14 +61,19 @@ class Chart:
     bg_path: str
     chart: dict
     music: bytes
-    bg: bytes
+    bg: Image.Image
+    bg_io: io.BytesIO
 
     def __init__(self, path: str):
+        self.chart_path = None
+        self.bg_path = None
+        self.music_path = None
         with zipfile.ZipFile(path, "r") as f:
             get_info(f, self)
             self.chart = json.loads(get_resouce(f, path=self.chart_path).decode())
             self.music = get_resouce(f, path=self.music_path, end=(".wav", ".ogg", ".mp3", ".flac"), tip=GET_RESOURCE_TIP % ("音乐", "背景音乐"))
-            self.bg = get_resouce(f, path=self.bg_path, end=(".png", ".jpg", ".jpeg"), tip=GET_RESOURCE_TIP % ("图片", "背景"))
+            self.bg_io = io.BytesIO(get_resouce(f, path=self.bg_path, end=(".png", ".jpg", ".jpeg"), tip=GET_RESOURCE_TIP % ("图片", "背景")))
+            self.bg = Image.open(self.bg_io)
         if "META" in self.chart:
             self.format = ["RPE", self.chart["META"]["RPEVersion"]]
         elif "formatVersion" in self.chart:

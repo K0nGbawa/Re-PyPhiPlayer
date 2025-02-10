@@ -39,4 +39,11 @@ class Texture:
         glGenerateMipmap(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, 0)
         return cls(texture_id, img.width, img.height)
+    
+    def set_width(self, x):
+        self.width = x
+        return self
 
+    def set_height(self, x):
+        self.height = x
+        return self
