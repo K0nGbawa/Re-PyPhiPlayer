@@ -49,7 +49,7 @@ while True:
             key_pressed.pop(event.key)
     glClear(GL_COLOR_BUFFER_BIT)
 
-    clock.tick()
+    clock.tick(60)
 
     now_time = music.get_pos()+offset
 

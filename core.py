@@ -63,9 +63,9 @@ def phi_draw(lines: phi_objs.judgeLine, bg, time, ui, process):
 
 class phiUI:
     def __init__(self, name, level, non):
-        font = pygame.font.Font(PGR_FONT, 30)
-        combo_label_font = pygame.font.Font(PGR_FONT, 14)
-        combo_num_font = pygame.font.Font(PGR_FONT, 44)
+        font = pygame.font.Font(PGR_FONT, int(30*WIDTH_SCALE))
+        combo_label_font = pygame.font.Font(PGR_FONT, int(14*WIDTH_SCALE))
+        combo_num_font = pygame.font.Font(PGR_FONT, int(44*WIDTH_SCALE))
         self.num_of_notes = non
         self.max_combo = 0
         self.score = 0
@@ -80,9 +80,9 @@ class phiUI:
     def render(self, process):
         draw_rect(0, WINDOW_HEIGHT, process*WINDOW_WIDTH, BAR_WIDTH, 0, 1, anchor=(0, 1), color=(0.6, 0.6, 0.6))
         draw_rect(process*WINDOW_WIDTH, WINDOW_HEIGHT, 2*WIDTH_SCALE, BAR_WIDTH, 0, 1, anchor=(1, 1), color=(1, 1, 1))
-        self.name.render(0.025, 0.025, 0.85, 0.85, 0, 1)
-        self.level.render(0.975, 0.025, 0.85, 0.85, 0, 1, anchor=(1, 0))
-        self.score_num.render(0.975, 0.965, 1, 1, 0, 1, anchor=(1, 1))
+        self.name.render_without_wh(0.025, 0.025, 0.85, 0.85, 0, 1)
+        self.level.render_without_wh(0.975, 0.025, 0.85, 0.85, 0, 1, anchor=(1, 0))
+        self.score_num.render_without_wh(0.975, 0.965, 1, 1, 0, 1, anchor=(1, 1))
         draw_texture(self.pause, 0.03*WINDOW_WIDTH, 0.955*WINDOW_HEIGHT, 0.12*WIDTH_SCALE, 0.12*WIDTH_SCALE, 0, 1, anchor=(0, 1))
         if self.combo >= 3:
             self.combo_label.render(0.5, 0.895, 1, 1, 0, 1, anchor=(0.5, 0.5))

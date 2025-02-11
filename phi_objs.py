@@ -125,6 +125,9 @@ def rotate(x, y, r, distance):
 def _init_notes(above, bpm, speed_events, note_datas: list[dict], function: typing.Callable[[typing.Any], bool]):
     return [Note(d, above, bpm, speed_events) for d in sorted(filter(function, note_datas), key=lambda x: x["time"])]
 
+def _get_line_color():
+    return PERFECT_COLOR if judges.good + judges.miss + judges.bad <= 0 else GOOD_COLOR if judges.miss + judges.bad <= 0 else (1, 1, 1)
+
 class judgeLine:
     def __init__(self, data: dict):
         self.bpm = data["bpm"]
@@ -242,7 +245,7 @@ class judgeLine:
 
     def draw(self):
         if self.a > 0:
-            draw_line(self.x, self.y, LINE_LENGTH, LINE_WIDTH, self.r, self.a, color=(1, 1, 0.6))
+            draw_line(self.x, self.y, LINE_LENGTH, LINE_WIDTH, self.r, self.a, color=_get_line_color())
 
 class Note:
     def __init__(self, data, above, bpm, speed_events):
@@ -267,13 +270,18 @@ class Note:
         self.a2 = 1
     
     def update(self, x, y, r, fp, time):
-        if self.time-0.16 <= time and self not in can_judge_notes and noautoplay and self.judgement is None:
+        if self.time-0.18 <= time and self not in can_judge_notes and noautoplay and self.judgement is None:
             can_judge_notes.append(self)
             can_judge_notes.sort(key=lambda x: x.time)
         if self.time < time and not noautoplay:
             if self.status == NoteStatus.Dropping:
                 NOTE_SOUNDS[self.type].play()
                 self.status = NoteStatus.Judged if self.type != 2 else NoteStatus.Judging
+                judges.combo += 1
+                judges.perfect += 1
+            if self.status == NoteStatus.Judging and time >= self.end_time:
+                judges.combo += 1
+                judges.perfect += 1
         if self.time < time:
             if self.status == NoteStatus.Dropping and self.type == 2:
                 self.status = NoteStatus.Judging
