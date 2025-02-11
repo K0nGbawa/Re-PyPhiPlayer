@@ -31,6 +31,8 @@ def get_info(fp: zipfile.ZipFile, to: "Chart"):
     elif "info.csv" in fp.namelist():
         info = parse_info_csv(fp.read("info.csv").decode())
         put_info_values(to, info, KEYMAPS["info.csv"])
+    else:
+        put_info_values(to, {}, KEYMAPS["info.yml"])
 
 def get_resouce(fp: zipfile.ZipFile, end:tuple[str]=(".json", ".pec"), path: typing.Optional[str]=None, tip=GET_RESOURCE_DEFAULT_TIP) -> bytes:
     try:

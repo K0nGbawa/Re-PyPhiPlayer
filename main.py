@@ -26,25 +26,33 @@ glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 chart = Chart(config["chart"])
 
 if chart.format[0] == "Phi":
-    lines, music, bg = phi_init(chart)
+    lines, music, bg, ui, note_score = phi_init(chart)
+
+key_pressed = {}
 
 music.play()
 
-fps = Text("", pygame.font.Font(".\\resources\\fonts\\cmdysj.ttf", 20))
+length = music.get_length()
 clock = pygame.time.Clock()
 while True:
+    events = []
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+        if event.type == pygame.KEYDOWN:
+            key_pressed[event.key] = True
+            events.append(event.key)
+        if event.type == pygame.KEYUP:
+            key_pressed.pop(event.key)
     glClear(GL_COLOR_BUFFER_BIT)
 
     clock.tick()
 
+    now_time = music.get_pos()
+
     if chart.format[0] == "Phi":
-        phi_update(lines, music.get_pos())
-        phi_draw(lines, bg)
-    fps.change_text(f"fps:{clock.get_fps()}")
-    fps.render(0, 0, 1, 1, 0, 1)
+        phi_update(lines, now_time, events, key_pressed)
+        phi_draw(lines, bg, now_time, ui, now_time/length)
 
     pygame.display.flip()

@@ -12,6 +12,11 @@ WINDOW_SIZE = [int(i) for i in get_value("size", "800x600").split("x")]
 WINDOW_WIDTH = WINDOW_SIZE[0]
 WINDOW_HEIGHT = WINDOW_SIZE[1]
 
+WIDTH_SCALE = WINDOW_WIDTH / 800
+HEIGHT_SCALE = WINDOW_HEIGHT / 600
+
+BAR_WIDTH = 0.0125*WINDOW_HEIGHT
+
 RED: str = "\033[91m"
 GREEN: str = "\033[92m"
 YELLOW: str = "\033[93m"
@@ -20,6 +25,8 @@ MAGENTA: str = "\033[95m"
 CYAN: str = "\033[96m"
 WHITE: str = "\033[97m"
 RESET: str = "\033[0m"
+
+noautoplay = "--noautoplay" in sys.argv
 
 KEYMAPS = {
     "info.yml": {
@@ -55,5 +62,11 @@ GET_RESOURCE_DEFAULT_TIP = "在压缩包中找到了多个谱面，请选择一�
 GET_RESOURCE_TIP = "在压缩包中找到了多个%s，请选择一个作为%s："
 
 config = {
-    "chart": get_value("chart", askopenfilename(title="选择谱面", filetypes=[("谱面文件", ["*.pez", "*.zip"]), ("所有文件", "*.*")]))
+    "chart": get_value("chart", askopenfilename(title="选择谱面", filetypes=[("谱面文件", ["*.pez", "*.zip"]), ("所有文件", "*.*")])),
+    "shit": "--pgr-shit-mountain" in sys.argv
 }
+
+PGR_FONT = ".\\resources\\fonts\\font.ttf"
+
+PERFECT_COLOR = (1, 0.92, 0.63)
+GOOD_COLOR = (0.7, 0.88, 1)

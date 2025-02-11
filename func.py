@@ -67,7 +67,7 @@ class Text:
     
     def render(self, x, y, sw, sh, r, a, anchor=(0, 0), color=(1, 1, 1)):
         if self.texture is not None:
-            draw_texture(self.texture, x*WINDOW_WIDTH, y*WINDOW_HEIGHT, sw, sh, r, a, anchor, color)
+            draw_texture(self.texture, x*WINDOW_WIDTH, y*WINDOW_HEIGHT, sw*WIDTH_SCALE, sh*WIDTH_SCALE, r, a, anchor, color)
     
     def change_text(self, text: str):
         if self.text != text:
