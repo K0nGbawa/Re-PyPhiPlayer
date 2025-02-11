@@ -24,7 +24,6 @@ def _init_background(img: Image.Image):
     return img
 
 def phi_init(chart: Chart):
-    ui = phiUI(chart.name, chart.level)
     times = {}
     notes = [phi_objs._phi_time_to_second(note["time"], line["bpm"]) for line in chart.chart["judgeLineList"] for note in line["notesAbove"]+line["notesBelow"]]
     for note in notes:
@@ -35,18 +34,20 @@ def phi_init(chart: Chart):
             note["MP"] = times[phi_objs._phi_time_to_second(note["time"], line["bpm"])] > 1
         for note in line["notesBelow"]:
             note["MP"] = times[phi_objs._phi_time_to_second(note["time"], line["bpm"])] > 1
+    ui = phiUI(chart.name, chart.level, len(notes))
     lines = [phi_objs.judgeLine(data) for data in chart.chart["judgeLineList"]]
     music = musicCls()
     music.load(chart.music)
     bg = chart.bg
     bg = _init_background(bg)
-    return lines, music, Texture.from_image(bg), ui, 1000000/len(notes)
+    return lines, music, Texture.from_image(bg), ui, 1000000/len(notes), chart.chart["offset"]
 
-def phi_update(lines: phi_objs.judgeLine, time, event, pkeys):
+def phi_update(lines: phi_objs.judgeLine, time, event, pkeys, ui):
     update_judge_notes(event, pkeys, time)
     for line in lines:
         line.update(time)
         line.update_notes(time)
+    ui.change_combo(judges.perfect, judges.good, judges.bad, judges.miss, judges.combo)
     
 def phi_draw(lines: phi_objs.judgeLine, bg, time, ui, process):
     draw_texture(bg, 0, 0, 1, 1, 0, 1)
@@ -61,10 +62,12 @@ def phi_draw(lines: phi_objs.judgeLine, bg, time, ui, process):
     ui.render(process)
 
 class phiUI:
-    def __init__(self, name, level):
+    def __init__(self, name, level, non):
         font = pygame.font.Font(PGR_FONT, 30)
         combo_label_font = pygame.font.Font(PGR_FONT, 14)
         combo_num_font = pygame.font.Font(PGR_FONT, 44)
+        self.num_of_notes = non
+        self.max_combo = 0
         self.score = 0
         self.combo = 0
         self.name = Text(name, font)
@@ -85,9 +88,13 @@ class phiUI:
             self.combo_label.render(0.5, 0.895, 1, 1, 0, 1, anchor=(0.5, 0.5))
             self.combo_num.render(0.5, 0.94, 1, 1, 0, 1, anchor=(0.5, 0.5))
     
-    def change_combo(self, combo, note_socre):
+    def change_combo(self, perfect, good, bad, miss, combo):
+        self.max_combo = max(combo, self.max_combo)
+        acc = (perfect + good * 0.65) / self.num_of_notes
+        score = (0.9 * acc + self.max_combo / self.num_of_notes * 0.1) * 1000000
         if self.combo != combo:
             self.combo = combo
             self.combo_num.change_text(str(self.combo))
-            self.score = combo * note_socre
-            self.score_num.change_text(str(round(self.score)).zfill(7))
+        if self.score != score:
+            self.score = score
+            self.score_num.change_text(str(int(self.score)).zfill(7))

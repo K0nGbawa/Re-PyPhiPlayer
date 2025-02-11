@@ -26,9 +26,11 @@ glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 chart = Chart(config["chart"])
 
 if chart.format[0] == "Phi":
-    lines, music, bg, ui, note_score = phi_init(chart)
+    lines, music, bg, ui, note_score, offset = phi_init(chart)
 
 key_pressed = {}
+
+offset += int(get_value("offset", "0"))/1000
 
 music.play()
 
@@ -49,10 +51,10 @@ while True:
 
     clock.tick()
 
-    now_time = music.get_pos()
+    now_time = music.get_pos()+offset
 
     if chart.format[0] == "Phi":
-        phi_update(lines, now_time, events, key_pressed)
+        phi_update(lines, now_time, events, key_pressed, ui)
         phi_draw(lines, bg, now_time, ui, now_time/length)
 
     pygame.display.flip()

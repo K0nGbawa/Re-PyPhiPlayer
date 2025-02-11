@@ -90,6 +90,7 @@ def _init_speed_events(events: list[dict], bpm: float):
         fp += (event["endTime"] - event["startTime"]) * event["value"] * Y
 
 def get_fp(events: list[dict], time: float) -> float:
+    time = max(time, 0)
     event = _find_event(events, time)
     return event["fp"] + (time - event["startTime"]) * event["value"] * Y
 
@@ -278,7 +279,7 @@ class Note:
                 self.status = NoteStatus.Judging
             if self.status == NoteStatus.Judging and time >= self.end_time:
                 self.status = NoteStatus.Judged
-            if self.type != 0 and self.judgement == Judgement.PERFECT:
+            if self.type not in [0, 2] and self.judgement == Judgement.PERFECT:
                 NOTE_SOUNDS[self.type].play()
                 self.status = NoteStatus.Judged
         cfp = (self.fp-fp if self.status != NoteStatus.Judging else 0) * self.speed
@@ -290,6 +291,7 @@ class Note:
         self._ = time-self.time
 
     def miss(self):
+        self.judgement = Judgement.MISS
         self.a2 = 0.5
 
     def perfect(self):
